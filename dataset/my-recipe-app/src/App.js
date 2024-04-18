@@ -7,23 +7,28 @@ function App() {
   const [isVegetarian, setIsVegetarian] = useState(false);  // Tracks the vegetarian toggle state
 
   const fetchRecipes = async () => {
-    const ingredientsArray = ingredients.split(/[, ]+/).filter(Boolean);
-    const response = await fetch('http://127.0.0.1:5000/api/recipes', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ ingredients: ingredientsArray, vegetarian: isVegetarian })
-    });
-    const data = await response.json();
-    const updatedData = data.map(recipe => {
-        return {
-            ...recipe,
-            link: recipe.link.startsWith('http') ? recipe.link : `http://${recipe.link}`
-        };
-    });
-    setRecipes(updatedData);
+    try {
+      const ingredientsText = ingredients.split(/[, ]+/).filter(Boolean).join(' '); 
+      const requestBody = {
+        ingredients: ingredientsText,
+        vegetarian: isVegetarian
+      };
+  
+      const response = await fetch('http://127.0.0.1:5000/api/recipes', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody)
+      });
+  
+      const data = await response.json();
+      setRecipes(data);
+    } catch (error) {
+      console.error('Failed to fetch recipes:', error);
+    }
   };
+
 
   return (
     <div className="App">
@@ -46,14 +51,16 @@ function App() {
         <label htmlFor="veg-toggle">Vegetarian Only</label>
         <button onClick={fetchRecipes}>Get Recipes</button>
         <ul>
-          {recipes.map((recipe, index) => (
-            <li key={index}>
-              {recipe.title} - Matches: {recipe.match_count}<br/>
-              Ingredients: {recipe.all_ingredients}<br/>
-              <a href={recipe.link} target="_blank" rel="noopener noreferrer">View Recipe</a>
-            </li>
-          ))}
-        </ul>
+    {recipes.map((recipe, index) => (
+        <li key={index}>
+            <h3>{recipe.title} - Matches: {recipe.score.toFixed(2)}</h3>
+            <p>Ingredients: {recipe.ingredients.join(', ')}</p>
+            <p>{recipe.is_vegetarian ? "Suitable for Vegetarians" : "Includes Meat"}</p>
+            <a href={recipe.link} target="_blank" rel="noopener noreferrer">View Recipe</a>
+        </li>
+    ))}
+</ul>
+
       </header>
     </div>
   );
