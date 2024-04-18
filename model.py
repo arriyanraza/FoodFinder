@@ -16,7 +16,8 @@ def load_data(csv_file):
         ingredients = ast.literal_eval(row['ingredients'])
         directions = ast.literal_eval(row['directions'])
         recipe_title = row['title']
-        combined_text = recipe_title + ' ' + ' '.join(ingredients) + ' ' + ' '.join(directions)
+        #combined_text = recipe_title + ' ' + ' '.join(ingredients) + ' ' + ' '.join(directions)
+        combined_text = recipe_title + ' ' + ' '.join(ingredients) 
         combined_texts.append(clean_text(combined_text))
 
     return combined_texts, recipes, ingredients_list
