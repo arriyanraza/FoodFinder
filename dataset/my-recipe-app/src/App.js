@@ -6,14 +6,17 @@ function App() {
   const [recipes, setRecipes] = useState([]);
 
   const fetchRecipes = async () => {
+    // Split by commas or spaces, or add more delimiters as needed
+    const ingredientsArray = ingredients.split(/[, ]+/).filter(Boolean);
+  
     const response = await fetch('http://127.0.0.1:5000/api/recipes', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  body: JSON.stringify({ ingredients: ingredients.split(',') })
-});
-
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ ingredients: ingredientsArray })
+    });
+  
     const data = await response.json();
     setRecipes(data);
   };
