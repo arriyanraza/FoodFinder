@@ -2,8 +2,10 @@ from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 import pandas as pd
 import ast  # Ensure ast is imported
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)  # This applies CORS to all routes and all origins; adjust if needed
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///recipes.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
