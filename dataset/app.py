@@ -9,6 +9,9 @@ CORS(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///recipes.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
+meat_ingredients = ['chicken', 'beef', 'pork', 'ham', 
+                    'turkey', 'lamb', 'duck', 'sausage', 'bacon', 'pepperoni',
+                    'ground beef', 'hamburger', 'ground round', 'beef brisket']
 
 class Recipe(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -31,20 +34,25 @@ def load_data():
         db.session.add(recipe)
     db.session.commit()
 
-def find_recipes(user_ingredients):
+def find_recipes(user_ingredients, vegetarian=False):
     matched_recipes = []
     user_ingredients_set = set(user_ingredients)
     all_recipes = Recipe.query.all()
     for recipe in all_recipes:
         ingredients_set = set(recipe.ingredients.split(','))
+        contains_meat = any(meat in ingredients_set for meat in meat_ingredients)
+        
+        if vegetarian and contains_meat:
+            continue  # Skip this recipe if vegetarian mode is on and recipe contains meat
+
         match_count = len(ingredients_set & user_ingredients_set)
         if match_count > 0:
-            print(recipe.link)  # Print the link to check its value
             matched_recipes.append({
                 "title": recipe.title,
                 "match_count": match_count,
                 "all_ingredients": recipe.ingredients,
-                "link": recipe.link
+                "link": recipe.link,
+                "is_vegetarian": not contains_meat
             })
 
     matched_recipes.sort(key=lambda x: x['match_count'], reverse=True)
@@ -52,8 +60,10 @@ def find_recipes(user_ingredients):
 
 @app.route('/api/recipes', methods=['POST'])
 def get_recipes():
-    user_ingredients = request.json.get('ingredients', [])
-    matched_recipes = find_recipes(user_ingredients)
+    data = request.get_json()
+    user_ingredients = data.get('ingredients', [])
+    vegetarian = data.get('vegetarian', False)  # Expect a vegetarian flag in the request
+    matched_recipes = find_recipes(user_ingredients, vegetarian)
     return jsonify(matched_recipes)
 
 if __name__ == "__main__":
