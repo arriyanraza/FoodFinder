@@ -37,7 +37,7 @@ function App() {
           type="text"
           value={ingredients}
           onChange={(e) => setIngredients(e.target.value)}
-          placeholder="Enter ingredients separated by commas"
+          placeholder="Enter ingredients"
         />
         <div className="switch">
           <input
