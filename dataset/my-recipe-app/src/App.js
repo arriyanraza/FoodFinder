@@ -4,6 +4,7 @@ import './App.css';
 function App() {
   const [ingredients, setIngredients] = useState('');
   const [recipes, setRecipes] = useState([]);
+  const [isVegetarian, setIsVegetarian] = useState(false);  // Tracks the vegetarian toggle state
 
   const fetchRecipes = async () => {
     const ingredientsArray = ingredients.split(/[, ]+/).filter(Boolean);
@@ -12,7 +13,7 @@ function App() {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ ingredients: ingredientsArray })
+      body: JSON.stringify({ ingredients: ingredientsArray, vegetarian: isVegetarian })
     });
     const data = await response.json();
     const updatedData = data.map(recipe => {
@@ -22,7 +23,7 @@ function App() {
         };
     });
     setRecipes(updatedData);
-};
+  };
 
   return (
     <div className="App">
@@ -33,6 +34,16 @@ function App() {
           onChange={(e) => setIngredients(e.target.value)}
           placeholder="Enter ingredients separated by commas"
         />
+        <div className="switch">
+          <input
+            type="checkbox"
+            id="veg-toggle"
+            checked={isVegetarian}
+            onChange={() => setIsVegetarian(!isVegetarian)}
+          />
+          <span className="slider"></span>
+        </div>
+        <label htmlFor="veg-toggle">Vegetarian Only</label>
         <button onClick={fetchRecipes}>Get Recipes</button>
         <ul>
           {recipes.map((recipe, index) => (
@@ -47,6 +58,5 @@ function App() {
     </div>
   );
 }
-
 
 export default App;
