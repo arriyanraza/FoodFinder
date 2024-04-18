@@ -6,9 +6,7 @@ function App() {
   const [recipes, setRecipes] = useState([]);
 
   const fetchRecipes = async () => {
-    // Split by commas or spaces, or add more delimiters as needed
     const ingredientsArray = ingredients.split(/[, ]+/).filter(Boolean);
-  
     const response = await fetch('http://127.0.0.1:5000/api/recipes', {
       method: 'POST',
       headers: {
@@ -16,10 +14,15 @@ function App() {
       },
       body: JSON.stringify({ ingredients: ingredientsArray })
     });
-  
     const data = await response.json();
-    setRecipes(data);
-  };
+    const updatedData = data.map(recipe => {
+        return {
+            ...recipe,
+            link: recipe.link.startsWith('http') ? recipe.link : `http://${recipe.link}`
+        };
+    });
+    setRecipes(updatedData);
+};
 
   return (
     <div className="App">
@@ -33,12 +36,17 @@ function App() {
         <button onClick={fetchRecipes}>Get Recipes</button>
         <ul>
           {recipes.map((recipe, index) => (
-            <li key={index}>{recipe.title} - Matches: {recipe.match_count}</li>
+            <li key={index}>
+              {recipe.title} - Matches: {recipe.match_count}<br/>
+              Ingredients: {recipe.all_ingredients}<br/>
+              <a href={recipe.link} target="_blank" rel="noopener noreferrer">View Recipe</a>
+            </li>
           ))}
         </ul>
       </header>
     </div>
   );
 }
+
 
 export default App;
