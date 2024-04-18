@@ -95,3 +95,21 @@ label {
   margin-left: 10px;
 }
 
+.App-header h1 {
+  color: #61dafb; /* Light blue color, similar to React's default */
+  font-size: 2rem; /* Larger font size */
+  margin-bottom: 20px; /* Adds some space below the title */
+}
+
+.recipe-list {
+  list-style-type: none; /* Removes bullets for the main recipe list */
+  padding: 0; /* Removes padding */
+}
+
+.recipe-item {
+  list-style-type: none; /* Ensures no bullets on individual recipe items */
+}
+
+.ingredients-list {
+  padding: 0; /* Optional: removes padding if needed */
+}
